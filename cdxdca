@@ -1,0 +1,74 @@
+import javafx.application.Application;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.layout.GridPane;
+import javafx.stage.Stage;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
+public class VanNienCalendar extends Application {
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+
+        // Lấy ngày hiện tại
+        LocalDate today = LocalDate.now();
+
+        // Tạo định dạng ngày tháng
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+        // Tạo tiêu đề
+        Label title = new Label("Lịch vạn niên " + today.getYear());
+
+        // Tạo lịch
+        GridPane calendar = new GridPane();
+        calendar.setHgap(10);
+        calendar.setVgap(10);
+        calendar.setPadding(new Insets(10, 10, 10, 10));
+
+        // Tạo tiêu đề các ngày trong tuần
+        String[] weekdays = {"CN", "T2", "T3", "T4", "T5", "T6", "T7"};
+        for (int i = 0; i < weekdays.length; i++) {
+            Label weekday = new Label(weekdays[i]);
+            calendar.add(weekday, i, 0);
+        }
+
+        // Tính toán ngày đầu tiên của tháng
+        LocalDate firstDayOfMonth = today.withDayOfMonth(1);
+        int startDayOfWeek = firstDayOfMonth.getDayOfWeek().getValue();
+        int dayOfMonth = 1;
+
+        // Tạo các ô ngày trong lịch
+        for (int row = 1; row < 7; row++) {
+            for (int col = 0; col < weekdays.length; col++) {
+                if ((row == 1 && col < startDayOfWeek) || (dayOfMonth > today.lengthOfMonth())) {
+                    // Ô trống nếu ngày không thuộc tháng hiện tại
+                    Label empty = new Label("");
+                    calendar.add(empty, col, row);
+                } else {
+                    // Tạo ô ngày
+                    Label day = new Label("" + dayOfMonth);
+                    calendar.add(day, col, row);
+                    dayOfMonth++;
+                }
+            }
+        }
+
+        // Tạo giao diện
+        GridPane root = new GridPane();
+        root.add(title, 0, 0);
+        root.add(calendar, 0, 1);
+
+        Scene scene = new Scene(root, 400, 400);
+
+        primaryStage.setTitle("Lịch vạn niên");
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+}
